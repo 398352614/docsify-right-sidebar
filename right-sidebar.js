@@ -13,78 +13,30 @@
             return;
         }
 
-        const headers = content.querySelectorAll('h1, h2, h3, h4, h5, h6');
+        const headers = content.querySelectorAll('h2, h3, h4, h5, h6');
         if (!headers.length) return;
 
         const currentPath = location.hash.split('?')[0];
 
         let outline = '<div class="right-sidebar"><ul class="sidebar-nav">';
 
-        let topLevelCount = 0;
-        let secondLevelCount = 0;
-        let thirdLevelCount = 0;
-        let fourthLevelCount = 0;
-        let fifthLevelCount = 0;
-        let sixthLevelCount = 0;
+        const levelCounts = [0, 0, 0, 0, 0]; // 用于存储每个层级的计数
 
         headers.forEach((header, index) => {
-            const level = header.tagName[1];
+            const level = parseInt(header.tagName[1]) - 1;
             let text = header.textContent;
             const id = header.id;
 
-            // Increase the count for the current level
-            switch (level) {
-                case '1':
-                    topLevelCount++;
-                    secondLevelCount = 0;
-                    thirdLevelCount = 0;
-                    fourthLevelCount = 0;
-                    fifthLevelCount = 0;
-                    sixthLevelCount = 0;
-                    break;
-                case '2':
-                    secondLevelCount++;
-                    thirdLevelCount = 0;
-                    fourthLevelCount = 0;
-                    fifthLevelCount = 0;
-                    sixthLevelCount = 0;
-                    break;
-                case '3':
-                    thirdLevelCount++;
-                    fourthLevelCount = 0;
-                    fifthLevelCount = 0;
-                    sixthLevelCount = 0;
-                    break;
-                case '4':
-                    fourthLevelCount++;
-                    fifthLevelCount = 0;
-                    sixthLevelCount = 0;
-                    break;
-                case '5':
-                    fifthLevelCount++;
-                    sixthLevelCount = 0;
-                    break;
-                case '6':
-                    sixthLevelCount++;
-                    break;
-                default:
-                    break;
+            // 更新当前层级计数，并将低层级的计数归零
+            levelCounts[level - 1]++;
+            for (let i = level; i < levelCounts.length; i++) {
+                levelCounts[i] = 0;
             }
 
-            // Generate the hierarchical number
-            let number = '';
-            if (level >= '2') number += `${topLevelCount}`;
-            if (level >= '3') number += `.${secondLevelCount}`;
-            if (level >= '4') number += `.${thirdLevelCount}`;
-            if (level >= '5') number += `.${fourthLevelCount}`;
-            if (level >= '6') number += `.${fifthLevelCount}`;
-            if (level >= '7') number += `.${sixthLevelCount}`;
+            // 生成层级序列号
+            const number = levelCounts.slice(0, level).join('.');
 
-            if (index === 0) {
-                text = '<span style="font-size: 24px; font-weight: bold; color: black;">大纲</span>';  // 第一个标题改为“大纲”，并设置样式
-            }
-
-            outline += `<li class="header-level-${level}"><a href="${currentPath}?id=${id}">${number} ${text}</a></li>`;
+            outline += `<li class="header-level-${level + 1}"><a href="${currentPath}?id=${id}">${number} ${text}</a></li>`;
         });
 
         outline += '</ul></div>';
@@ -129,7 +81,7 @@
                 margin: 10px 0;
             }
             .right-sidebar .header-level-1 {
-                font-size: 18px;
+                font-size: 16px;
                 font-weight: bold;
             }
             .right-sidebar .header-level-2 {
@@ -137,19 +89,19 @@
                 padding-left: 10px;
             }
             .right-sidebar .header-level-3 {
-                font-size: 14px;
+                font-size: 16px;
                 padding-left: 20px;
             }
             .right-sidebar .header-level-4 {
-                font-size: 12px;
+                font-size: 16px;
                 padding-left: 30px;
             }
             .right-sidebar .header-level-5 {
-                font-size: 10px;
+                font-size: 16px;
                 padding-left: 40px;
             }
             .right-sidebar .header-level-6 {
-                font-size: 8px;
+                font-size: 16px;
                 padding-left: 50px;
             }
             .right-sidebar a {
